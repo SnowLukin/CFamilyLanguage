@@ -47,6 +47,10 @@ if (testBool && testBool2) {
     print "Here 2";
 }
 
+while (count < 5) {
+    count = count + 1;
+}
+
 print("\nTest calling Class method");
 Something().test();
 
