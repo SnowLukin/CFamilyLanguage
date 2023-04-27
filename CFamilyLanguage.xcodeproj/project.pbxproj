@@ -63,6 +63,7 @@
 		D77731C429FAF55100D26C03 /* LanguageList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageList.swift; sourceTree = "<group>"; };
 		D77731C729FAF57B00D26C03 /* Scanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scanner.swift; sourceTree = "<group>"; };
 		D77731C929FAF58800D26C03 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
+		D77731CB29FAF9EA00D26C03 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +98,7 @@
 			children = (
 				D777319729FAF36D00D26C03 /* main.swift */,
 				D777319E29FAF3D400D26C03 /* Source */,
+				D77731CB29FAF9EA00D26C03 /* README.md */,
 			);
 			path = CFamilyLanguage;
 			sourceTree = "<group>";
