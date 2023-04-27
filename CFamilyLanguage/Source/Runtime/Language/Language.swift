@@ -75,7 +75,7 @@ class Language {
     }
 
     private static func report(line: Int, `where`: String, message: String) {
-        print("[line \(line)]: Error\(`where`): \(message)")
+        print("[line \(line)] Error\(`where`): \(message)")
         hadError = true
     }
 
