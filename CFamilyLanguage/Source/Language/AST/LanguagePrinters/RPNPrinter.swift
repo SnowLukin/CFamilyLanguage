@@ -34,7 +34,11 @@ extension RPNPrinter: ExprVisitor {
     }
     
     func visitCallExpr(_ expr: Expr.Call) throws -> String {
-        try printNode(expr.callee) + " " + expr.arguments.map { try printNode($0) }.joined(separator: " ") + "CALL"
+        var builder = try printNode(expr.callee) + " "
+        for argument in expr.arguments {
+            builder += try printNode(argument) + " "
+        }
+        return builder + "CALL"
     }
     
     func visitGetExpr(_ expr: Expr.Get) throws -> String {
@@ -130,7 +134,7 @@ extension RPNPrinter: StmtVisitor {
         }
         builder += ") \(stmt.type.rawValue) ("
         for body in stmt.body {
-            builder += try printNode(body)
+            builder += try "(" + printNode(body) + ") "
         }
         builder += ")"
         return builder

@@ -24,29 +24,21 @@ int c = 10;
 WriteLine("Test: 10 + 10:");
 WriteLine(a + c);
 int[] arr = { 1, 2, 3, 2, 3, 4 };
-WriteLine("Test arr = [1, 2, 3, 2, 3, 4]:");
+WriteLine("Printing arr = [1, 2, 3, 2, 3, 4]:");
 WriteLine(arr);
-WriteLine("Test o[1]:");
+WriteLine("Printing arr[1]:");
 WriteLine(arr[1]);
-WriteLine("Test changing arr[1] to 20:");
+WriteLine("Changing arr[1] to 20:");
 arr[1] = 20;
 WriteLine(arr[1]);
-
-class Some {}
-
-class Something: Some {
-    int[] test() {
-        WriteLine("Testttt");
-    }
-}
 
 bool testBool = true;
 bool testBool2 = false;
 
-if (testBool && testBool2) {
-    WriteLine("Here");
+if (testBool && testBool2 || false) {
+    WriteLine("if went to true");
 } else {
-    WriteLine("Here 2");
+    WriteLine("if went to false");
 }
 
 int count1 = 2;
@@ -57,13 +49,20 @@ while (count < 5) {
 WriteLine(count);
 WriteLine(count1);
 
-Something().test();
-
-class Second: Something {
-    void run() {
-        base.test();
+class Some {
+    int sum(int a, int b) {
+        return a + b;
     }
 }
+
+class Something: Some {
+    void test() {
+        WriteLine("Calling parent class method:");
+        int sumResult = base.sum(10, 5);
+        WriteLine(sumResult);
+    }
+}
+Something().test();
 """
 
 

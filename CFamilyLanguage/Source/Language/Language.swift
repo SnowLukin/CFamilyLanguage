@@ -12,7 +12,6 @@ class Language {
     private static let ast = AstPrinter()
     private static let rpn = RPNPrinter()
     private static let cplusPrinter = CPlusPrinter()
-    private static let pythonPrinter = PythonPrinter()
     static var hadError = false
     static var hadRuntimeError = false
 
@@ -51,12 +50,11 @@ class Language {
         
         do {
             
-            try interpreter.interpret(statements: statements, isPrintable: false)
+            try interpreter.interpret(statements: statements, isPrintable: true)
             
-            /// Remove comments below to see RPN representation of the code tree
-//             try ast.printNodes(statements)
+//            try ast.printNodes(statements)
 //            try rpn.printNodes(statements)
-            try cplusPrinter.printCode(statements)
+//            try cplusPrinter.printCode(statements)
 //            try pythonPrinter.printCode(statements)
         } catch {
             // Do nothing
