@@ -200,8 +200,10 @@ extension Parser {
     }
     
     private func printStatement() throws -> Stmt {
+        _ = try consume(type: .leftParen, message: "Expect '(' after WriteLine.")
         let value = try expression()
-        _ = try consume(type: .semicolon, message: "Expect ';' after value.")
+        _ = try consume(type: .rightParen, message: "Expect ')' after WriteLine.")
+        _ = try consume(type: .semicolon, message: "Expect ';' at the end of WriteLine.")
         return Stmt.Print(expression: value)
     }
     
@@ -254,7 +256,7 @@ extension Parser {
     private func function(kind: String) throws -> Stmt.Function {
         let typeToken = try consume(type: .fun, message: "Expect \(kind) modifier.")
         let typeLexeme = try checkType(typeToken.lexeme)
-        let type = CType.getType(from: typeLexeme)
+        let type = CType.getType(from: typeLexeme, isFunction: true)
         guard type != .none else {
             throw error(at: typeToken, message: "Unexpected \(kind) modifier.")
         }
@@ -296,22 +298,27 @@ extension Parser {
     private func assignment() throws -> Expr {
         let expr = try or()
         
-        if match(types: .equal) {
+        if match(types: .equal, .plusEqual, .minusEqual, .slashEqual, .starEqual) {
             let equals = previous()
             let value = try assignment()
             
-            if let variable = expr as? Expr.Variable {
-                let name = variable.name
-                return Expr.Assign(name: name, value: value)
-            }
-            if let get = expr as? Expr.Get {
-                return Expr.Set(object: get.object, name: get.name, value: value)
-            }
-            if let subs = expr as? Expr.Subscript {
-                return Expr.Subscript(name: subs.name, index: subs.index, value: value, paren: subs.paren)
+            guard let type = AssignType.getType(from: equals.lexeme) else {
+                throw error(at: equals, message: "Invalid assignment.")
             }
             
-            _ = error(at: equals, message: "Invalid assignment target.")
+            if let variable = expr as? Expr.Variable {
+                let name = variable.name
+//                return Expr.Assign(name: name, value: value)
+                return Expr.Assign(name: name, value: value, type: type)
+            }
+            if let get = expr as? Expr.Get {
+                return Expr.Set(object: get.object, name: get.name, value: value, type: type)
+            }
+            if let subs = expr as? Expr.Subscript {
+                return Expr.Subscript(name: subs.name, index: subs.index, value: value, paren: subs.paren, type: type)
+            }
+            
+            throw error(at: equals, message: "Invalid assignment target.")
         }
         
         return expr
@@ -446,7 +453,7 @@ extension Parser {
     private func finishSubscript(_ expr: Expr) throws -> Expr {
         let index = try or()
         let paren = try consume(type: .rightBracket, message: "Expect ']' after arguments.")
-        return Expr.Subscript(name: expr, index: index, value: nil, paren: paren)
+        return Expr.Subscript(name: expr, index: index, value: nil, paren: paren, type: .none)
     }
 
     private func primary() throws -> Expr {

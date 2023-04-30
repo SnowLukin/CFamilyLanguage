@@ -27,6 +27,13 @@
 		D77731C529FAF55100D26C03 /* LanguageList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77731C429FAF55100D26C03 /* LanguageList.swift */; };
 		D77731C829FAF57B00D26C03 /* Scanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77731C729FAF57B00D26C03 /* Scanner.swift */; };
 		D77731CA29FAF58800D26C03 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77731C929FAF58800D26C03 /* Parser.swift */; };
+		D7B873C929FC10F0001E60B9 /* CPlusPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B873C829FC10F0001E60B9 /* CPlusPrinter.swift */; };
+		D7B873CB29FD5EB9001E60B9 /* PythonPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B873CA29FD5EB9001E60B9 /* PythonPrinter.swift */; };
+		D7B873D529FD7FEE001E60B9 /* Numeric+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B873D429FD7FEE001E60B9 /* Numeric+Extension.swift */; };
+		D7B873D729FD7FFB001E60B9 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B873D629FD7FFB001E60B9 /* String+Extension.swift */; };
+		D7B873D929FD913C001E60B9 /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B873D829FD913C001E60B9 /* Optional+Extension.swift */; };
+		D7B873DB29FE1E17001E60B9 /* RPNPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B873DA29FE1E17001E60B9 /* RPNPrinter.swift */; };
+		D7B873DD29FE395E001E60B9 /* AssignType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B873DC29FE395E001E60B9 /* AssignType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -63,6 +70,13 @@
 		D77731C429FAF55100D26C03 /* LanguageList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageList.swift; sourceTree = "<group>"; };
 		D77731C729FAF57B00D26C03 /* Scanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scanner.swift; sourceTree = "<group>"; };
 		D77731C929FAF58800D26C03 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
+		D7B873C829FC10F0001E60B9 /* CPlusPrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPlusPrinter.swift; sourceTree = "<group>"; };
+		D7B873CA29FD5EB9001E60B9 /* PythonPrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PythonPrinter.swift; sourceTree = "<group>"; };
+		D7B873D429FD7FEE001E60B9 /* Numeric+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Numeric+Extension.swift"; sourceTree = "<group>"; };
+		D7B873D629FD7FFB001E60B9 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
+		D7B873D829FD913C001E60B9 /* Optional+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extension.swift"; sourceTree = "<group>"; };
+		D7B873DA29FE1E17001E60B9 /* RPNPrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RPNPrinter.swift; sourceTree = "<group>"; };
+		D7B873DC29FE395E001E60B9 /* AssignType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,10 +118,10 @@
 		D777319E29FAF3D400D26C03 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				D777319F29FAF3E500D26C03 /* Token */,
-				D77731A429FAF41C00D26C03 /* AST */,
+				D7B873D329FD7FE3001E60B9 /* Extensions */,
+				D77731B729FAF4D400D26C03 /* Language */,
 				D77731AC29FAF46C00D26C03 /* Runtime */,
-				D77731C629FAF56E00D26C03 /* SyntaxAnalysis */,
+				D77731C629FAF56E00D26C03 /* LanguageAnalyzers */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -125,7 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				D77731A529FAF42B00D26C03 /* Nodes */,
-				D77731AA29FAF46400D26C03 /* AstPrinter.swift */,
+				D7B873CC29FD65C4001E60B9 /* LanguagePrinters */,
 			);
 			path = AST;
 			sourceTree = "<group>";
@@ -147,7 +161,6 @@
 				D77731B129FAF49A00D26C03 /* Resolver.swift */,
 				D77731B329FAF4AE00D26C03 /* RuntimeError.swift */,
 				D77731B529FAF4C900D26C03 /* Return.swift */,
-				D77731B729FAF4D400D26C03 /* Language */,
 			);
 			path = Runtime;
 			sourceTree = "<group>";
@@ -155,6 +168,9 @@
 		D77731B729FAF4D400D26C03 /* Language */ = {
 			isa = PBXGroup;
 			children = (
+				D777319F29FAF3E500D26C03 /* Token */,
+				D77731A429FAF41C00D26C03 /* AST */,
+				D7B873DC29FE395E001E60B9 /* AssignType.swift */,
 				D77731B829FAF4E100D26C03 /* CType.swift */,
 				D77731BA29FAF4F100D26C03 /* Language.swift */,
 				D77731BC29FAF50000D26C03 /* LanguageCallable.swift */,
@@ -166,13 +182,34 @@
 			path = Language;
 			sourceTree = "<group>";
 		};
-		D77731C629FAF56E00D26C03 /* SyntaxAnalysis */ = {
+		D77731C629FAF56E00D26C03 /* LanguageAnalyzers */ = {
 			isa = PBXGroup;
 			children = (
 				D77731C729FAF57B00D26C03 /* Scanner.swift */,
 				D77731C929FAF58800D26C03 /* Parser.swift */,
 			);
-			path = SyntaxAnalysis;
+			path = LanguageAnalyzers;
+			sourceTree = "<group>";
+		};
+		D7B873CC29FD65C4001E60B9 /* LanguagePrinters */ = {
+			isa = PBXGroup;
+			children = (
+				D77731AA29FAF46400D26C03 /* AstPrinter.swift */,
+				D7B873DA29FE1E17001E60B9 /* RPNPrinter.swift */,
+				D7B873C829FC10F0001E60B9 /* CPlusPrinter.swift */,
+				D7B873CA29FD5EB9001E60B9 /* PythonPrinter.swift */,
+			);
+			path = LanguagePrinters;
+			sourceTree = "<group>";
+		};
+		D7B873D329FD7FE3001E60B9 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				D7B873D429FD7FEE001E60B9 /* Numeric+Extension.swift */,
+				D7B873D629FD7FFB001E60B9 /* String+Extension.swift */,
+				D7B873D829FD913C001E60B9 /* Optional+Extension.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -238,19 +275,26 @@
 				D77731A729FAF43900D26C03 /* Expr.swift in Sources */,
 				D77731A329FAF3FB00D26C03 /* TokenType.swift in Sources */,
 				D77731BD29FAF50000D26C03 /* LanguageCallable.swift in Sources */,
+				D7B873DB29FE1E17001E60B9 /* RPNPrinter.swift in Sources */,
 				D77731B929FAF4E100D26C03 /* CType.swift in Sources */,
+				D7B873DD29FE395E001E60B9 /* AssignType.swift in Sources */,
+				D7B873D529FD7FEE001E60B9 /* Numeric+Extension.swift in Sources */,
 				D77731B229FAF49A00D26C03 /* Resolver.swift in Sources */,
 				D77731A929FAF44D00D26C03 /* Stmt.swift in Sources */,
+				D7B873CB29FD5EB9001E60B9 /* PythonPrinter.swift in Sources */,
 				D77731AE29FAF47D00D26C03 /* Environment.swift in Sources */,
 				D77731BF29FAF50F00D26C03 /* LanguageClass.swift in Sources */,
 				D777319829FAF36D00D26C03 /* main.swift in Sources */,
 				D77731BB29FAF4F100D26C03 /* Language.swift in Sources */,
 				D77731CA29FAF58800D26C03 /* Parser.swift in Sources */,
+				D7B873C929FC10F0001E60B9 /* CPlusPrinter.swift in Sources */,
+				D7B873D729FD7FFB001E60B9 /* String+Extension.swift in Sources */,
 				D77731C129FAF52800D26C03 /* LanguageFunction.swift in Sources */,
 				D77731A129FAF3F500D26C03 /* Token.swift in Sources */,
 				D77731B629FAF4C900D26C03 /* Return.swift in Sources */,
 				D77731AB29FAF46400D26C03 /* AstPrinter.swift in Sources */,
 				D77731C329FAF53C00D26C03 /* LanguageInstance.swift in Sources */,
+				D7B873D929FD913C001E60B9 /* Optional+Extension.swift in Sources */,
 				D77731C829FAF57B00D26C03 /* Scanner.swift in Sources */,
 				D77731B429FAF4AE00D26C03 /* RuntimeError.swift in Sources */,
 			);

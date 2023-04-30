@@ -8,23 +8,23 @@
 import Foundation
 
 enum CType: String, CaseIterable {
-    case int
-    case `string`
-    case float
-    case double
-    case char
-    case bool
+    case int = "int"
+    case `string` = "string"
+    case float = "float"
+    case double = "double"
+    case char = "char"
+    case bool = "bool"
     
-    case intArray
-    case stringArray
-    case doubleArray
-    case floatArray
-    case charArray
-    case boolArray
+    case intArray = "int[]"
+    case stringArray = "string[]"
+    case doubleArray = "double[]"
+    case floatArray = "float[]"
+    case charArray = "char[]"
+    case boolArray = "bool[]"
     
-    case void
+    case void = "void"
     
-    case none
+    case none = ""
     
     static func getType(from string: String, isFunction: Bool = false) -> Self {
         switch string {

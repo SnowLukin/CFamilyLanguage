@@ -26,8 +26,13 @@ protocol ExprVisitor {
     func visitSubscriptExpr(_ expr: Expr.Subscript) throws -> ReturnTypeExpr
 }
 
-class Expr: Hashable {
-    
+class Expr {
+    func accept<T: ExprVisitor>(visitor: T) throws -> T.ReturnTypeExpr {
+        fatalError("Must be overridden by subclass")
+    }
+}
+
+extension Expr: Hashable {
     static func == (lhs: Expr, rhs: Expr) -> Bool {
         return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
     }
@@ -35,7 +40,10 @@ class Expr: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(ObjectIdentifier(self))
     }
-    
+}
+
+// MARK: - Expression Nodes
+extension Expr {
     class List: Expr {
         let values: [Expr]
         
@@ -53,12 +61,14 @@ class Expr: Hashable {
         let index: Expr
         let value: Expr?
         let paren: Token
+        let type: AssignType?
 
-        init(name: Expr, index: Expr, value: Expr?, paren: Token) {
+        init(name: Expr, index: Expr, value: Expr?, paren: Token, type: AssignType?) {
             self.name = name
             self.index = index
             self.value = value
             self.paren = paren
+            self.type = type
         }
 
         override func accept<T: ExprVisitor>(visitor: T) throws -> T.ReturnTypeExpr {
@@ -69,10 +79,12 @@ class Expr: Hashable {
     class Assign: Expr {
         let name: Token
         let value: Expr
+        let type: AssignType
         
-        init(name: Token, value: Expr) {
+        init(name: Token, value: Expr, type: AssignType) {
             self.name = name
             self.value = value
+            self.type = type
         }
         
         override func accept<T: ExprVisitor>(visitor: T) throws -> T.ReturnTypeExpr {
@@ -170,11 +182,13 @@ class Expr: Hashable {
         let object: Expr
         let name: Token
         let value: Expr
+        let type: AssignType
         
-        init(object: Expr, name: Token, value: Expr) {
+        init(object: Expr, name: Token, value: Expr, type: AssignType) {
             self.object = object
             self.name = name
             self.value = value
+            self.type = type
         }
         override func accept<T: ExprVisitor>(visitor: T) throws -> T.ReturnTypeExpr {
             return try visitor.visitSetExpr(self)
@@ -231,9 +245,5 @@ class Expr: Hashable {
         override func accept<T: ExprVisitor>(visitor: T) throws -> T.ReturnTypeExpr {
             return try visitor.visitVariableExpr(self)
         }
-    }
-    
-    func accept<T: ExprVisitor>(visitor: T) throws -> T.ReturnTypeExpr {
-        fatalError("Must be overridden by subclass")
     }
 }

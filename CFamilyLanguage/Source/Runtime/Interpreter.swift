@@ -25,6 +25,7 @@ struct Clock: LanguageCallable {
 
 class Interpreter {
     let globals = Environment()
+    var isPrintable = true
     private var environment: Environment
     private var locals: [Expr: Int] = [:]
     
@@ -33,7 +34,8 @@ class Interpreter {
         globals.define("clock", type: .none, value: Clock())
     }
     
-    func interpret(statements: [Stmt]) throws {
+    func interpret(statements: [Stmt], isPrintable: Bool = true) throws {
+        self.isPrintable = isPrintable
         do {
             for statement in statements {
                 try execute(statement)
@@ -69,63 +71,93 @@ class Interpreter {
         self.environment = previous
     }
     
+    private func handleAssigning(_ assignType: AssignType, token: Token, previousValue: Any?, newValue: Any?) throws -> Any? {
+        guard let newValue = newValue, let previousValue = previousValue else { return nil }
+        var resultValue: Any?
+        switch assignType {
+        case .assign:
+            return newValue
+        case .plusAssign:
+            resultValue = Int.performOperation(+, previousValue, newValue)
+            ?? Double.performOperation(+, previousValue, newValue)
+            ?? String.performOperation(+, previousValue, newValue)
+        case .minusAssign:
+            resultValue = Int.performOperation(-, previousValue, newValue)
+            ?? Double.performOperation(-, previousValue, newValue)
+            if resultValue != nil { return resultValue }
+            throw throwWrongType(token)
+        case .slashAssign:
+            resultValue = Int.performOperation(/, previousValue, newValue)
+            ?? Double.performOperation(/, previousValue, newValue)
+        case .starAssign:
+            resultValue = Int.performOperation(*, previousValue, newValue)
+            ?? Double.performOperation(*, previousValue, newValue)
+        }
+        if resultValue != nil { return resultValue }
+        throw throwWrongType(token)
+    }
+    
     private func checkType(token: Token, type: CType, value: Any?) throws { // checking if the value matches the type
         if value == nil { return }
         switch type {
-        case .int, .float, .double:
-            if value as? Double == nil {
-                throw RuntimeError(token: token, message: "Value does not match variable's type")
-            }
+        case .int:
+            if value as? Int == nil { throw throwWrongType(token) }
+        case .float, .double:
+            if value as? Double == nil { throw throwWrongType(token) }
         case .string:
-            if value as? String == nil {
-                throw RuntimeError(token: token, message: "Value does not match variable's type")
-            }
+            if value as? String == nil { throw throwWrongType(token) }
         case .char:
             if value as? String == nil || (value as? String)?.count ?? 0 > 1 {
-                throw RuntimeError(token: token, message: "Value does not match variable's type")
+                throw throwWrongType(token)
             }
         case .bool:
-            if value as? Bool == nil {
-                throw RuntimeError(token: token, message: "Value does not match variable's type")
-            }
+            if value as? Bool == nil { throw throwWrongType(token) }
         case .stringArray:
             guard let list = value as? LanguageList, list.values.filter({ $0 as? String == nil }).isEmpty else {
-                throw RuntimeError(token: token, message: "Value does not match variable's type")
+                throw throwWrongType(token)
             }
-        case .doubleArray, .floatArray, .intArray:
+        case .intArray:
+            guard let list = value as? LanguageList, list.values.filter({ $0 as? Int == nil }).isEmpty else {
+                throw throwWrongType(token)
+            }
+        case .doubleArray, .floatArray:
             guard let list = value as? LanguageList, list.values.filter({ $0 as? Double == nil }).isEmpty else {
-                throw RuntimeError(token: token, message: "Value does not match variable's type")
+                throw throwWrongType(token)
             }
         case .charArray:
             guard let list = value as? LanguageList,
                     list.values.filter({ $0 as? String == nil && ($0 as? String)?.count ?? 0 > 1 }).isEmpty else {
-                throw RuntimeError(token: token, message: "Value does not match variable's type")
+                throw throwWrongType(token)
             }
         case .boolArray:
             guard let list = value as? LanguageList, list.values.filter({ $0 as? Bool == nil }).isEmpty else {
-                throw RuntimeError(token: token, message: "Value does not match variable's type")
+                throw throwWrongType(token)
             }
-        case .void:
-            break
-        case .none:
+        case .void, .none:
             break
         }
     }
+    
+    private func throwWrongType(_ token: Token) -> RuntimeError {
+        RuntimeError(token: token, message: "Value does not match variable's type")
+    }
 
-    private func lookUpVariable(name: Token, expr: Expr) throws -> Any? {
+    private func lookUpVariable(name: Token, expr: Expr) throws -> Environment.Info {
         if let distance = locals[expr] {
-            return environment.getAt(distance: distance, name: name.lexeme).item
+            return environment.getAt(distance: distance, name: name.lexeme)
         }
-        return try globals.get(name).item
+        return try globals.get(name)
     }
 
     private func checkNumberOperand(operator: Token, operand: Any?) throws {
         if operand is Double { return }
+        if operand is Int { return }
         throw RuntimeError(token: `operator`, message: "Operand must be a number.")
     }
 
     private func checkNumberOperands(operator: Token, left: Any?, right: Any?) throws {
         if left is Double && right is Double { return }
+        if left is Int && right is Int { return }
         throw RuntimeError(token: `operator`, message: "Operands must be numbers.")
     }
 
@@ -136,7 +168,7 @@ class Interpreter {
     }
 
     private func isEqual(_ a: Any?, _ b: Any?) -> Bool {
-        if a == nil && b == nil { return true }
+        if a == nil, b == nil { return true }
         if a == nil { return false }
         let a = a as AnyObject
         return a.isEqual(b as AnyObject)
@@ -150,6 +182,9 @@ class Interpreter {
                 text = String(text.dropLast(2))
             }
             return text
+        }
+        if let intValue = object as? Int {
+            return String(intValue)
         }
         
         if let stringValue = object as? String {
@@ -200,16 +235,21 @@ extension Interpreter: ExprVisitor {
         guard let list = name as? LanguageList else {
             throw RuntimeError(token: expr.paren, message: "Only lists can be subscripted.")
         }
-        guard let castedIndex = index as? Double else {
+        guard let castedIndex = index as? Int else {
             throw RuntimeError(token: expr.paren, message: "Index should be of type int.")
         }
+        
         if let value = expr.value {
-            
-            if list.setAtIndex(Int(castedIndex), value: try evaluate(value)) {
-                return try evaluate(value)
-            } else {
-                throw RuntimeError(token: expr.paren, message: "Index out of range.")
+            let value = try evaluate(value)
+            let previousValue = list.getEleAt(Int(castedIndex))
+            if !value.canBeCastedToSameType(as: previousValue) || (value == nil && previousValue == nil) {
+                throw RuntimeError(token: expr.paren, message: "Unexpected assignment value type.")
             }
+            let newValue = try handleAssigning(expr.type!, token: expr.paren, previousValue: previousValue, newValue: value)
+            if list.setAtIndex(Int(castedIndex), value: newValue) {
+                return newValue
+            }
+            throw RuntimeError(token: expr.paren, message: "Index out of range.")
         } else {
             guard castedIndex >= 0 && Int(castedIndex) < list.length() else {
                 throw RuntimeError(token: expr.paren, message: "Index out of range.")
@@ -220,16 +260,17 @@ extension Interpreter: ExprVisitor {
     
     func visitAssignExpr(_ expr: Expr.Assign) throws -> Any? {
         let value = try evaluate(expr.value)
+        let variable = try lookUpVariable(name: expr.name, expr: expr)
+        let type = variable.type
+        let previousValue = variable.item
+        let newValue = try handleAssigning(expr.type, token: expr.name, previousValue: previousValue, newValue: value)
+        try checkType(token: expr.name, type: type, value: value)
         if let distance = locals[expr] {
-            let type = environment.getAt(distance: distance, name: expr.name.lexeme).type
-            try checkType(token: expr.name, type: type, value: value)
-            environment.assignAt(distance: distance, name: expr.name, type: type, value: value)
+            environment.assignAt(distance: distance, name: expr.name, type: type, value: newValue)
         } else {
-            let type = try globals.get(expr.name).type
-            try checkType(token: expr.name, type: type, value: value)
-            try globals.assign(expr.name, type: type, value: value)
+            try globals.assign(expr.name, type: type, value: newValue)
         }
-        return value
+        return newValue
     }
 
     func visitBinaryExpr(_ expr: Expr.Binary) throws -> Any? {
@@ -243,22 +284,35 @@ extension Interpreter: ExprVisitor {
             return isEqual(left, right)
         case .greater:
             try checkNumberOperands(operator: expr.operator, left: left, right: right)
-            return (left as! Double) > (right as! Double)
+            if let left = left as? Double, let right = right as? Double { return left > right }
+            if let left = left as? Int, let right = right as? Int { return left > right }
+            throw RuntimeError(token: expr.operator, message: "Can only perform action with Int&Int or Double&Double.")
         case .greaterEqual:
             try checkNumberOperands(operator: expr.operator, left: left, right: right)
-            return (left as! Double) >= (right as! Double)
+            if let left = left as? Double, let right = right as? Double { return left >= right }
+            if let left = left as? Int, let right = right as? Int { return left >= right }
+            throw RuntimeError(token: expr.operator, message: "Can only perform action with Int&Int or Double&Double.")
         case .less:
             try checkNumberOperands(operator: expr.operator, left: left, right: right)
-            return (left as! Double) < (right as! Double)
+            if let left = left as? Double, let right = right as? Double { return left < right }
+            if let left = left as? Int, let right = right as? Int { return left < right }
+            throw RuntimeError(token: expr.operator, message: "Can only perform action with Int&Int or Double&Double.")
         case .lessEqual:
             try checkNumberOperands(operator: expr.operator, left: left, right: right)
-            return (left as! Double) <= (right as! Double)
+            if let left = left as? Double, let right = right as? Double { return left <= right }
+            if let left = left as? Int, let right = right as? Int { return left <= right }
+            throw RuntimeError(token: expr.operator, message: "Can only perform action with Int&Int or Double&Double.")
         case .minus:
             try checkNumberOperands(operator: expr.operator, left: left, right: right)
-            return (left as! Double) - (right as! Double)
+            if let left = left as? Double, let right = right as? Double { return left - right }
+            if let left = left as? Int, let right = right as? Int { return left - right }
+            throw RuntimeError(token: expr.operator, message: "Can only perform action with Int&Int or Double&Double.")
         case .plus:
             if let leftDouble = left as? Double, let rightDouble = right as? Double {
                 return leftDouble + rightDouble
+            }
+            if let leftInt = left as? Int, let rightInt = right as? Int {
+                return leftInt + rightInt
             }
             if let leftString = left as? String, let rightString = right as? String {
                 return leftString + rightString
@@ -266,10 +320,14 @@ extension Interpreter: ExprVisitor {
             throw RuntimeError(token: expr.operator, message: "Operands must be two numbers or two strings.")
         case .slash:
             try checkNumberOperands(operator: expr.operator, left: left, right: right)
-            return (left as! Double) / (right as! Double)
+            if let left = left as? Double, let right = right as? Double { return left / right }
+            if let left = left as? Int, let right = right as? Int { return left / right }
+            throw RuntimeError(token: expr.operator, message: "Can only perform action with Int&Int or Double&Double.")
         case .star:
             try checkNumberOperands(operator: expr.operator, left: left, right: right)
-            return (left as! Double) * (right as! Double)
+            if let left = left as? Double, let right = right as? Double { return left * right }
+            if let left = left as? Int, let right = right as? Int { return left * right }
+            throw RuntimeError(token: expr.operator, message: "Can only perform action with Int&Int or Double&Double.")
         default:
             return nil
         }
@@ -299,7 +357,7 @@ extension Interpreter: ExprVisitor {
     }
 
     func visitGroupingExpr(_ expr: Expr.Grouping) throws -> Any? {
-        return try evaluate(expr.expression)
+        try evaluate(expr.expression)
     }
 
     func visitLiteralExpr(_ expr: Expr.Literal) -> Any? {
@@ -322,7 +380,9 @@ extension Interpreter: ExprVisitor {
             throw RuntimeError(token: expr.name, message: "Only instances have fields.")
         }
         let value = try evaluate(expr.value)
-        instance.set(name: expr.name, value: value)
+        let previousValue = try instance.get(expr.name)
+        let newValue = try handleAssigning(expr.type, token: expr.name, previousValue: previousValue, newValue: value)
+        instance.set(name: expr.name, value: newValue)
         return value
     }
 
@@ -337,7 +397,7 @@ extension Interpreter: ExprVisitor {
     }
 
     func visitThisExpr(_ expr: Expr.This) throws -> Any? {
-        try lookUpVariable(name: expr.keyword, expr: expr)
+        try lookUpVariable(name: expr.keyword, expr: expr).item
     }
 
     func visitUnaryExpr(_ expr: Expr.Unary) throws -> Any? {
@@ -354,7 +414,7 @@ extension Interpreter: ExprVisitor {
     }
 
     func visitVariableExpr(_ expr: Expr.Variable) throws -> Any? {
-        let value = try lookUpVariable(name: expr.name, expr: expr)
+        let value = try lookUpVariable(name: expr.name, expr: expr).item
         guard value != nil else {
             throw RuntimeError(token: expr.name, message: "Variable not initialized.")
         }
@@ -427,7 +487,9 @@ extension Interpreter: StmtVisitor {
     
     func visitPrintStmt(_ stmt: Stmt.Print) throws -> () {
         let value = try evaluate(stmt.expression)
-        print(stringify(value))
+        if isPrintable {
+            print(stringify(value))
+        }
     }
     
     func visitReturnStmt(_ stmt: Stmt.Return) throws -> () {
