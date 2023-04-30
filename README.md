@@ -325,8 +325,8 @@ if (((testBool && testBool2) || false)) {
 }
 int count1 = 2;
 while (count < 5) {
-    count = 1;
-    count1 = 2;
+    count += 1;
+    count1 *= 2;
 }
 std::cout << (count);
 std::cout << (count1);
