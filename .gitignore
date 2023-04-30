@@ -1,0 +1,10 @@
+# Ignore build artifacts
+build/
+*.o
+*.exe
+
+# Ignore user-specific files
+xcuserdata/
+*.xcuserstate
+*.DS_Store
+*.idea

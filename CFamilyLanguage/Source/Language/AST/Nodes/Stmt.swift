@@ -22,6 +22,13 @@ protocol StmtVisitor {
 }
 
 class Stmt {
+    func accept<T: StmtVisitor>(visitor: T) throws -> T.ReturnTypeStmt {
+        fatalError("Must be implemented by subclasses")
+    }
+}
+
+// MARK: Statement Nodes
+extension Stmt {
     class Block: Stmt {
         let statements: [Stmt]
         
@@ -151,9 +158,5 @@ class Stmt {
         override func accept<T: StmtVisitor>(visitor: T) throws -> T.ReturnTypeStmt {
             return try visitor.visitWhileStmt(self)
         }
-    }
-    
-    func accept<T: StmtVisitor>(visitor: T) throws -> T.ReturnTypeStmt {
-        fatalError("Must be implemented by subclasses")
     }
 }

@@ -9,52 +9,60 @@ import Foundation
 
 let sharpCode = """
 int a = 10;
+a = 20;
 string b = "20";
 char abs = "c";
-print abs;
+
 int count = 0;
-int something() {
-    print "Hello";
+void something() {
+    WriteLine("Hello");
 }
-print "\nTest calling function that prints Hello";
+
+WriteLine("Test calling function that prints Hello");
 something();
 int c = 10;
-print "\nTest: 10 + 10:";
-print a + c;
+WriteLine("Test: 10 + 10:");
+WriteLine(a + c);
 int[] arr = { 1, 2, 3, 2, 3, 4 };
-print "\nTest arr = [1, 2, 3, 2, 3, 4]:";
-print arr;
-print "\nTest o[1]:";
-print arr[1];
-print "\nTest changing arr[1] to 20:";
+WriteLine("Printing arr = [1, 2, 3, 2, 3, 4]:");
+WriteLine(arr);
+WriteLine("Printing arr[1]:");
+WriteLine(arr[1]);
+WriteLine("Changing arr[1] to 20:");
 arr[1] = 20;
-print arr[1];
-
-class Some {}
-
-class Something: Some {
-    int[] test() {
-        print("Testttt");
-    }
-}
+WriteLine(arr[1]);
 
 bool testBool = true;
 bool testBool2 = false;
 
-if (testBool && testBool2) {
-    print "Here";
+if (testBool && testBool2 || false) {
+    WriteLine("if went to true");
 } else {
-    print "Here 2";
+    WriteLine("if went to false");
 }
 
+int count1 = 2;
 while (count < 5) {
-    count = count + 1;
+    count += 1;
+    count1 *= 2;
+}
+WriteLine(count);
+WriteLine(count1);
+
+class Some {
+    int sum(int a, int b) {
+        return a + b;
+    }
 }
 
-print("\nTest calling Class method");
+class Something: Some {
+    void test() {
+        WriteLine("Calling parent class method:");
+        int sumResult = base.sum(10, 5);
+        WriteLine(sumResult);
+    }
+}
 Something().test();
-
-class Second: Something {}
 """
 
 

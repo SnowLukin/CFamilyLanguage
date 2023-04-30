@@ -50,13 +50,13 @@ class Scanner {
         case ".":
             addToken(type: .dot)
         case "-":
-            addToken(type: .minus)
+            addToken(type: match("=") ? .starEqual : .minus)
         case "+":
-            addToken(type: .plus)
+            addToken(type: match("=") ? .starEqual : .plus)
         case ";":
             addToken(type: .semicolon)
         case "*":
-            addToken(type: .star)
+            addToken(type: match("=") ? .starEqual : .star)
         case "!":
             addToken(type: match("=") ? .bangEqual : .bang)
         case "=":
@@ -71,7 +71,7 @@ class Scanner {
                     _ = advance()
                 }
             } else {
-                addToken(type: .slash)
+                addToken(type: match("=") ? .slashEqual : .slash)
             }
         case " ", "\r", "\t":
             break
@@ -141,7 +141,9 @@ class Scanner {
         let startIndex = source.index(source.startIndex, offsetBy: start)
         let endIndex = source.index(source.startIndex, offsetBy: current)
         
-        if let value = Double(source[startIndex..<endIndex]) {
+        if let value = Int(source[startIndex..<endIndex]) {
+            addToken(type: .number, literal: value)
+        } else if let value = Double(source[startIndex..<endIndex]) {
             addToken(type: .number, literal: value)
         }
     }
@@ -238,7 +240,7 @@ extension Scanner {
         "if": .if,
         "null": .nil,
         "||": .or,
-        "print": .print,
+        "WriteLine": .print,
         "return": .return,
         "base": .super,
         "true": .true,

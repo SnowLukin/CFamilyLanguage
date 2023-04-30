@@ -18,6 +18,10 @@ enum TokenType {
     case greater, greaterEqual
     case less, lessEqual
     
+    // Two character operation tokens.
+    case minusEqual, plusEqual, slashEqual, starEqual
+    case minusMinus, plusPlus
+    
     // Literals.
     case identifier, string, number
     

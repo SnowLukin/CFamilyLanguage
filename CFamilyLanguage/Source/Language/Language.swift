@@ -10,19 +10,10 @@ import Foundation
 class Language {
     private static let interpreter = Interpreter()
     private static let ast = AstPrinter()
+    private static let rpn = RPNPrinter()
+    private static let cplusPrinter = CPlusPrinter()
     static var hadError = false
     static var hadRuntimeError = false
-
-    static func main(args: [String]) throws {
-        if args.count > 1 {
-            print("Usage: lox [script]")
-            exit(64)
-        } else if args.count == 1 {
-            try runFile(path: args[0])
-        } else {
-            try runPrompt()
-        }
-    }
 
     static func runFile(path: String) throws {
         if let bytes = FileManager.default.contents(atPath: path),
@@ -59,12 +50,12 @@ class Language {
         
         do {
             
-            try interpreter.interpret(statements: statements)
+            try interpreter.interpret(statements: statements, isPrintable: true)
             
-            /// Remove comments below to see RPN representation of the code tree
-//            for statement in statements {
-//                print(try ast.printNode(statement))
-//            }
+//            try ast.printNodes(statements)
+//            try rpn.printNodes(statements)
+//            try cplusPrinter.printCode(statements)
+//            try pythonPrinter.printCode(statements)
         } catch {
             // Do nothing
         }
