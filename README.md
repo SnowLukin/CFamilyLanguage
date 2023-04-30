@@ -228,32 +228,32 @@ Calling parent class method:
 ```cs
 int a = 10
 a = 20
-string b = 20
-char abs = c
+string b = "20"
+char abs = "c"
 int count = 0
-void something () ((PRINT Hello))
-(PRINT Test calling function that prints Hello)
+void something () (((PRINT "Hello")) )
+(PRINT "Test calling function that prints Hello")
 something CALL
 int c = 10
-(PRINT Test: 10 + 10:)
+(PRINT "Test: 10 + 10:")
 (PRINT a + c)
 int[] arr = ( ARRAY LENGTH(6) 1 2 3 2 3 4 )
-(PRINT Printing arr = [1, 2, 3, 2, 3, 4]:)
+(PRINT "Printing arr = [1, 2, 3, 2, 3, 4]:")
 (PRINT arr)
-(PRINT Printing arr[1]:)
+(PRINT "Printing arr[1]:")
 (PRINT GET arr INDEX(1))
-(PRINT Changing arr[1] to 20:)
+(PRINT "Changing arr[1] to 20:")
 arr INDEX(1) = 20
 (PRINT GET arr INDEX(1))
 bool testBool = true
 bool testBool2 = false
-IF false || testBool2 && testBool THEN ( (PRINT if went to true) ) ELSE ( (PRINT if went to false) ) END
+IF false || testBool2 && testBool THEN ( (PRINT "if went to true") ) ELSE ( (PRINT "if went to false") ) END
 int count1 = 2
 WHILE count < 5 DO ( count += 1 count1 *= 2 ) END
 (PRINT count)
 (PRINT count1)
-( CLASS Some (int sum (int a int b) ((RETURN a + b))) )
-( CLASS Something < PARENTCLASS Some (void test () ((PRINT Calling parent class method:)int sumResult = BASE.sum 10 5 CALL(PRINT sumResult))) )
+( CLASS Some (int sum (int a int b) (((RETURN a + b)) )) )
+( CLASS Something < PARENTCLASS Some (void test () (((PRINT "Calling parent class method:")) (int sumResult = BASE.sum 10 5 CALL) ((PRINT sumResult)) )) )
 Something CALL test CALL
 ```
 
@@ -262,32 +262,32 @@ Something CALL test CALL
 ```cs
 a 10 = int
 a 20 =
-b 20 = string
-abs c = char
+b "20" = string
+abs "c" = char
 count 0 = int
-something () void (((Hello PRINT)) )
-(Test calling function that prints Hello PRINT)
+something () void ((("Hello" PRINT)) )
+("Test calling function that prints Hello" PRINT)
 something CALL
 c 10 = int
-(Test: 10 + 10: PRINT)
+("Test: 10 + 10:" PRINT)
 (a c + PRINT)
 arr ( 1 2 3 2 3 4 LENGTH(6) ARRAY ) = int[]
-(Printing arr = [1, 2, 3, 2, 3, 4]: PRINT)
+("Printing arr = [1, 2, 3, 2, 3, 4]:" PRINT)
 (arr PRINT)
-(Printing arr[1]: PRINT)
+("Printing arr[1]:" PRINT)
 (arr INDEX(1) GET PRINT)
-(Changing arr[1] to 20: PRINT)
+("Changing arr[1] to 20:" PRINT)
 arr INDEX(1) 20 =
 (arr INDEX(1) GET PRINT)
 testBool true = bool
 testBool2 false = bool
-IF false testBool2 testBool && || THEN ( (if went to true PRINT) ) ELSE ( (if went to false PRINT) ) END
+IF false testBool2 testBool && || THEN ( ("if went to true" PRINT) ) ELSE ( ("if went to false" PRINT) ) END
 count1 2 = int
 WHILE count 5 < DO ( count 1 += count1 2 *= ) END
 (count PRINT)
 (count1 PRINT)
 ( Some CLASS (sum (a int b int) int (((a b + RETURN)) )) )
-( Something CLASS < Some PARENTCLASS (test () void (((Calling parent class method: PRINT)) (sumResult BASE.sum 10 5 CALL = int) ((sumResult PRINT)) )) )
+( Something CLASS < Some PARENTCLASS (test () void ((("Calling parent class method:" PRINT)) (sumResult BASE.sum 10 5 CALL = int) ((sumResult PRINT)) )) )
 Something CALL test CALL
 ```
 

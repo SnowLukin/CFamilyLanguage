@@ -51,6 +51,9 @@ extension RPNPrinter: ExprVisitor {
     
     func visitLiteralExpr(_ expr: Expr.Literal) throws -> String {
         if let value = expr.value {
+            if let value = value as? String {
+                return "\"\(value)\""
+            }
             return String(describing: value)
         }
         return "null"
