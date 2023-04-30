@@ -48,7 +48,7 @@ class CPlusPrinter {
 extension CPlusPrinter: ExprVisitor {
     
     func visitAssignExpr(_ expr: Expr.Assign) throws -> String {
-        "\(expr.name.lexeme) = \(try printNode(expr.value))"
+        "\(expr.name.lexeme) \(expr.type.rawValue) \(try printNode(expr.value))"
     }
     
     func visitBinaryExpr(_ expr: Expr.Binary) throws -> String {
@@ -83,7 +83,7 @@ extension CPlusPrinter: ExprVisitor {
     }
     
     func visitSetExpr(_ expr: Expr.Set) throws -> String {
-        "\(try printNode(expr.object)).\(expr.name.lexeme) = \(try printNode(expr.value))"
+        "\(try printNode(expr.object)).\(expr.name.lexeme) \(expr.type.rawValue) \(try printNode(expr.value))"
     }
     
     func visitSuperExpr(_ expr: Expr.Super) throws -> String {
@@ -113,7 +113,7 @@ extension CPlusPrinter: ExprVisitor {
     func visitSubscriptExpr(_ expr: Expr.Subscript) throws -> String {
         var subscriptStr = "\(try printNode(expr.name))[\(try printNode(expr.index))]"
         if let value = expr.value {
-            subscriptStr += " = \(try printNode(value))"
+            subscriptStr += " \(expr.type?.rawValue ?? "=") \(try printNode(value))"
         }
         return subscriptStr
     }
