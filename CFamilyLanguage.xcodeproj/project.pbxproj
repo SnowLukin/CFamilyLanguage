@@ -28,7 +28,6 @@
 		D77731C829FAF57B00D26C03 /* Scanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77731C729FAF57B00D26C03 /* Scanner.swift */; };
 		D77731CA29FAF58800D26C03 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77731C929FAF58800D26C03 /* Parser.swift */; };
 		D7B873C929FC10F0001E60B9 /* CPlusPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B873C829FC10F0001E60B9 /* CPlusPrinter.swift */; };
-		D7B873CB29FD5EB9001E60B9 /* PythonPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B873CA29FD5EB9001E60B9 /* PythonPrinter.swift */; };
 		D7B873D529FD7FEE001E60B9 /* Numeric+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B873D429FD7FEE001E60B9 /* Numeric+Extension.swift */; };
 		D7B873D729FD7FFB001E60B9 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B873D629FD7FFB001E60B9 /* String+Extension.swift */; };
 		D7B873D929FD913C001E60B9 /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B873D829FD913C001E60B9 /* Optional+Extension.swift */; };
@@ -71,7 +70,6 @@
 		D77731C729FAF57B00D26C03 /* Scanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scanner.swift; sourceTree = "<group>"; };
 		D77731C929FAF58800D26C03 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		D7B873C829FC10F0001E60B9 /* CPlusPrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPlusPrinter.swift; sourceTree = "<group>"; };
-		D7B873CA29FD5EB9001E60B9 /* PythonPrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PythonPrinter.swift; sourceTree = "<group>"; };
 		D7B873D429FD7FEE001E60B9 /* Numeric+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Numeric+Extension.swift"; sourceTree = "<group>"; };
 		D7B873D629FD7FFB001E60B9 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		D7B873D829FD913C001E60B9 /* Optional+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extension.swift"; sourceTree = "<group>"; };
@@ -197,7 +195,6 @@
 				D77731AA29FAF46400D26C03 /* AstPrinter.swift */,
 				D7B873DA29FE1E17001E60B9 /* RPNPrinter.swift */,
 				D7B873C829FC10F0001E60B9 /* CPlusPrinter.swift */,
-				D7B873CA29FD5EB9001E60B9 /* PythonPrinter.swift */,
 			);
 			path = LanguagePrinters;
 			sourceTree = "<group>";
@@ -281,7 +278,6 @@
 				D7B873D529FD7FEE001E60B9 /* Numeric+Extension.swift in Sources */,
 				D77731B229FAF49A00D26C03 /* Resolver.swift in Sources */,
 				D77731A929FAF44D00D26C03 /* Stmt.swift in Sources */,
-				D7B873CB29FD5EB9001E60B9 /* PythonPrinter.swift in Sources */,
 				D77731AE29FAF47D00D26C03 /* Environment.swift in Sources */,
 				D77731BF29FAF50F00D26C03 /* LanguageClass.swift in Sources */,
 				D777319829FAF36D00D26C03 /* main.swift in Sources */,
