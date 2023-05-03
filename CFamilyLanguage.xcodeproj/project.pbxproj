@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D721231D2A02F998009D45A5 /* language in Resources */ = {isa = PBXBuildFile; fileRef = D721231A2A02F412009D45A5 /* language */; };
+		D72123202A03005A009D45A5 /* ast in Resources */ = {isa = PBXBuildFile; fileRef = D721231F2A03005A009D45A5 /* ast */; };
+		D72123222A03023C009D45A5 /* rpn in Resources */ = {isa = PBXBuildFile; fileRef = D72123212A03023C009D45A5 /* rpn */; };
+		D72123242A03024F009D45A5 /* cplus in Resources */ = {isa = PBXBuildFile; fileRef = D72123232A03024F009D45A5 /* cplus */; };
 		D777319829FAF36D00D26C03 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = D777319729FAF36D00D26C03 /* main.swift */; };
 		D77731A129FAF3F500D26C03 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77731A029FAF3F500D26C03 /* Token.swift */; };
 		D77731A329FAF3FB00D26C03 /* TokenType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77731A229FAF3FB00D26C03 /* TokenType.swift */; };
@@ -48,6 +52,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D721231A2A02F412009D45A5 /* language */ = {isa = PBXFileReference; lastKnownFileType = text; path = language; sourceTree = "<group>"; };
+		D721231F2A03005A009D45A5 /* ast */ = {isa = PBXFileReference; lastKnownFileType = text; path = ast; sourceTree = "<group>"; };
+		D72123212A03023C009D45A5 /* rpn */ = {isa = PBXFileReference; lastKnownFileType = text; path = rpn; sourceTree = "<group>"; };
+		D72123232A03024F009D45A5 /* cplus */ = {isa = PBXFileReference; lastKnownFileType = text; path = cplus; sourceTree = "<group>"; };
 		D777319429FAF36D00D26C03 /* CFamilyLanguage */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CFamilyLanguage; sourceTree = BUILT_PRODUCTS_DIR; };
 		D777319729FAF36D00D26C03 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		D77731A029FAF3F500D26C03 /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
@@ -88,6 +96,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D72123192A02F3C3009D45A5 /* Examples */ = {
+			isa = PBXGroup;
+			children = (
+				D721231A2A02F412009D45A5 /* language */,
+				D721231F2A03005A009D45A5 /* ast */,
+				D72123212A03023C009D45A5 /* rpn */,
+				D72123232A03024F009D45A5 /* cplus */,
+			);
+			path = Examples;
+			sourceTree = "<group>";
+		};
 		D777318B29FAF36D00D26C03 = {
 			isa = PBXGroup;
 			children = (
@@ -109,6 +128,7 @@
 			children = (
 				D777319729FAF36D00D26C03 /* main.swift */,
 				D777319E29FAF3D400D26C03 /* Source */,
+				D72123192A02F3C3009D45A5 /* Examples */,
 			);
 			path = CFamilyLanguage;
 			sourceTree = "<group>";
@@ -219,6 +239,7 @@
 				D777319029FAF36D00D26C03 /* Sources */,
 				D777319129FAF36D00D26C03 /* Frameworks */,
 				D777319229FAF36D00D26C03 /* CopyFiles */,
+				D721231C2A02F990009D45A5 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -261,6 +282,20 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D721231C2A02F990009D45A5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D721231D2A02F998009D45A5 /* language in Resources */,
+				D72123202A03005A009D45A5 /* ast in Resources */,
+				D72123242A03024F009D45A5 /* cplus in Resources */,
+				D72123222A03023C009D45A5 /* rpn in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D777319029FAF36D00D26C03 /* Sources */ = {

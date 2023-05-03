@@ -16,17 +16,15 @@ class CPlusPrinter {
         String(repeating: "    ", count: indentationLevel)
     }
     
-    func printCode(_ statements: [Stmt]) throws {
-        for statement in statements {
-            print(try printNode(statement))
-        }
+    func getNodes(_ statements: [Stmt]) throws -> String {
+        try statements.map { try getNode($0) }.joined(separator: "\n")
     }
     
-    private func printNode(_ expr: Expr) throws -> String {
+    private func getNode(_ expr: Expr) throws -> String {
         try expr.accept(visitor: self)
     }
     
-    private func printNode(_ stmt: Stmt) throws -> String {
+    private func getNode(_ stmt: Stmt) throws -> String {
         try stmt.accept(visitor: self)
     }
     
@@ -48,24 +46,24 @@ class CPlusPrinter {
 extension CPlusPrinter: ExprVisitor {
     
     func visitAssignExpr(_ expr: Expr.Assign) throws -> String {
-        "\(expr.name.lexeme) \(expr.type.rawValue) \(try printNode(expr.value))"
+        "\(expr.name.lexeme) \(expr.type.rawValue) \(try getNode(expr.value))"
     }
     
     func visitBinaryExpr(_ expr: Expr.Binary) throws -> String {
-        "\(try printNode(expr.left)) \(expr.operator.lexeme) \(try printNode(expr.right))"
+        "\(try getNode(expr.left)) \(expr.operator.lexeme) \(try getNode(expr.right))"
     }
     
     func visitCallExpr(_ expr: Expr.Call) throws -> String {
-        let arguments = try expr.arguments.map { try printNode($0) }.joined(separator: ", ")
-        return "\(try printNode(expr.callee))(\(arguments))"
+        let arguments = try expr.arguments.map { try getNode($0) }.joined(separator: ", ")
+        return "\(try getNode(expr.callee))(\(arguments))"
     }
     
     func visitGetExpr(_ expr: Expr.Get) throws -> String {
-        "\(try printNode(expr.object)).\(expr.name.lexeme)"
+        "\(try getNode(expr.object)).\(expr.name.lexeme)"
     }
     
     func visitGroupingExpr(_ expr: Expr.Grouping) throws -> String {
-        "(\(try printNode(expr.expression)))"
+        "(\(try getNode(expr.expression)))"
     }
     
     func visitLiteralExpr(_ expr: Expr.Literal) throws -> String {
@@ -79,11 +77,11 @@ extension CPlusPrinter: ExprVisitor {
     }
     
     func visitLogicalExpr(_ expr: Expr.Logical) throws -> String {
-        "(\(try printNode(expr.left)) \(expr.operator.lexeme) \(try printNode(expr.right)))"
+        "(\(try getNode(expr.left)) \(expr.operator.lexeme) \(try getNode(expr.right)))"
     }
     
     func visitSetExpr(_ expr: Expr.Set) throws -> String {
-        "\(try printNode(expr.object)).\(expr.name.lexeme) \(expr.type.rawValue) \(try printNode(expr.value))"
+        "\(try getNode(expr.object)).\(expr.name.lexeme) \(expr.type.rawValue) \(try getNode(expr.value))"
     }
     
     func visitSuperExpr(_ expr: Expr.Super) throws -> String {
@@ -98,7 +96,7 @@ extension CPlusPrinter: ExprVisitor {
     }
     
     func visitUnaryExpr(_ expr: Expr.Unary) throws -> String {
-        "(\(expr.operator.lexeme)\(try printNode(expr.right)))"
+        "(\(expr.operator.lexeme)\(try getNode(expr.right)))"
     }
     
     func visitVariableExpr(_ expr: Expr.Variable) throws -> String {
@@ -106,14 +104,14 @@ extension CPlusPrinter: ExprVisitor {
     }
     
     func visitListExpr(_ expr: Expr.List) throws -> String {
-        let elements = try expr.values.map { try printNode($0) }.joined(separator: ", ")
+        let elements = try expr.values.map { try getNode($0) }.joined(separator: ", ")
         return "{\(elements)}"
     }
     
     func visitSubscriptExpr(_ expr: Expr.Subscript) throws -> String {
-        var subscriptStr = "\(try printNode(expr.name))[\(try printNode(expr.index))]"
+        var subscriptStr = "\(try getNode(expr.name))[\(try getNode(expr.index))]"
         if let value = expr.value {
-            subscriptStr += " \(expr.type?.rawValue ?? "=") \(try printNode(value))"
+            subscriptStr += " \(expr.type?.rawValue ?? "=") \(try getNode(value))"
         }
         return subscriptStr
     }
@@ -124,7 +122,7 @@ extension CPlusPrinter: StmtVisitor {
     func visitBlockStmt(_ stmt: Stmt.Block) throws -> String {
         var blockStr = ""
         for (index, statement) in stmt.statements.enumerated() {
-            blockStr += "\(indent)\(try printNode(statement))"
+            blockStr += "\(indent)\(try getNode(statement))"
             if index < stmt.statements.count - 1 {
                 blockStr += "\n"
             }
@@ -144,7 +142,7 @@ extension CPlusPrinter: StmtVisitor {
         classStr += "public:\n"
         indentationLevel += 1
         for method in stmt.methods {
-            classStr += "\(indent)\(try printNode(method))\n"
+            classStr += "\(indent)\(try getNode(method))\n"
         }
         indentationLevel -= 1
         classStr += "\(indent)};\n"
@@ -153,7 +151,7 @@ extension CPlusPrinter: StmtVisitor {
     }
     
     func visitExpressionStmt(_ stmt: Stmt.Expression) throws -> String {
-        "\(try printNode(stmt.expression));"
+        "\(try getNode(stmt.expression));"
     }
     
     func visitFunctionStmt(_ stmt: Stmt.Function) throws -> String {
@@ -167,7 +165,7 @@ extension CPlusPrinter: StmtVisitor {
         functionStr += ") {\n"
         indentationLevel += 1
         for statement in stmt.body {
-            functionStr += "\(indent)\(try printNode(statement))\n"
+            functionStr += "\(indent)\(try getNode(statement))\n"
         }
         indentationLevel -= 1
         functionStr += "\(indent)}\n"
@@ -175,15 +173,15 @@ extension CPlusPrinter: StmtVisitor {
     }
     
     func visitIfStmt(_ stmt: Stmt.If) throws -> String {
-        var ifStr = "if (\(try printNode(stmt.condition))) {\n"
+        var ifStr = "if (\(try getNode(stmt.condition))) {\n"
         indentationLevel += 1
-        ifStr += "\(try printNode(stmt.thenBranch))\n"
+        ifStr += "\(try getNode(stmt.thenBranch))\n"
         indentationLevel -= 1
         ifStr += "\(indent)}"
         if let elseBranch = stmt.elseBranch {
             ifStr += " else {\n"
             indentationLevel += 1
-            ifStr += "\(try printNode(elseBranch))\n"
+            ifStr += "\(try getNode(elseBranch))\n"
             indentationLevel -= 1
             ifStr += "\(indent)}"
         }
@@ -191,13 +189,13 @@ extension CPlusPrinter: StmtVisitor {
     }
     
     func visitPrintStmt(_ stmt: Stmt.Print) throws -> String {
-        "std::cout << (\(try printNode(stmt.expression)));"
+        "std::cout << (\(try getNode(stmt.expression)));"
     }
     
     func visitReturnStmt(_ stmt: Stmt.Return) throws -> String {
         var returnStr = "return"
         if let value = stmt.value {
-            returnStr += " \(try printNode(value))"
+            returnStr += " \(try getNode(value))"
         }
         returnStr += ";"
         return returnStr
@@ -207,9 +205,9 @@ extension CPlusPrinter: StmtVisitor {
         var varStr = "\(handleTypeRepresentation(stmt.type)) \(stmt.name.lexeme)"
         if let initializer = stmt.initializer {
             if let listExpr = initializer as? Expr.List {
-                varStr += "[\(listExpr.values.count)] = \(try printNode(listExpr))"
+                varStr += "[\(listExpr.values.count)] = \(try getNode(listExpr))"
             } else {
-                varStr += " = \(try printNode(initializer))"
+                varStr += " = \(try getNode(initializer))"
             }
         }
         varStr += ";"
@@ -217,9 +215,9 @@ extension CPlusPrinter: StmtVisitor {
     }
     
     func visitWhileStmt(_ stmt: Stmt.While) throws -> String {
-        var whileStr = "while (\(try printNode(stmt.condition))) {\n"
+        var whileStr = "while (\(try getNode(stmt.condition))) {\n"
         indentationLevel += 1
-        whileStr += "\(try printNode(stmt.body))\n"
+        whileStr += "\(try getNode(stmt.body))\n"
         indentationLevel -= 1
         whileStr += "\(indent)}"
         return whileStr

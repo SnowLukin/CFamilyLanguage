@@ -126,22 +126,11 @@ Here are some of them:
 - `Unnown variable`
 
 
-## Preview
+## Usage & Preview
 
-You can manage print options in Language file.
-
-```swift
-try interpreter.interpret(statements: statements, isPrintable: true)
-
-try ast.printNodes(statements)
-try rpn.printNodes(statements)
-try cplusPrinter.printCode(statements)
-```
-
-- `interpreter` handles runtime errors, performs the calculations and prints the result. If you dont want to see the results put `isPrintable` to false.
-- `ast` - representation of nodes of our language tree
-- `rpn` - reversed polish notation
-- `cplusPrinter` - C++ converter
+1. Write the code in our language in file `Examples/language`.
+2. Run the project.
+3. You will be able to see the results of the script in terminal. Also in the `Examples` directory you can find the represantation of the code in AST, RPN and C++.
 
 
 **Input code**
@@ -265,29 +254,29 @@ a 20 =
 b "20" = string
 abs "c" = char
 count 0 = int
-something () void ((("Hello" PRINT)) )
-("Test calling function that prints Hello" PRINT)
+something FUNCTION(0) void PROC_START "Hello" PRINT PROC_END
+"Test calling function that prints Hello" PRINT
 something CALL
 c 10 = int
-("Test: 10 + 10:" PRINT)
-(a c + PRINT)
+"Test: 10 + 10:" PRINT
+a c + PRINT
 arr ( 1 2 3 2 3 4 LENGTH(6) ARRAY ) = int[]
-("Printing arr = [1, 2, 3, 2, 3, 4]:" PRINT)
-(arr PRINT)
-("Printing arr[1]:" PRINT)
-(arr INDEX(1) GET PRINT)
-("Changing arr[1] to 20:" PRINT)
+"Printing arr = [1, 2, 3, 2, 3, 4]:" PRINT
+arr PRINT
+"Printing arr[1]:" PRINT
+arr INDEX(1) GET PRINT
+"Changing arr[1] to 20:" PRINT
 arr INDEX(1) 20 =
-(arr INDEX(1) GET PRINT)
+arr INDEX(1) GET PRINT
 testBool true = bool
 testBool2 false = bool
-IF false testBool2 testBool && || THEN ( ("if went to true" PRINT) ) ELSE ( ("if went to false" PRINT) ) END
+false testBool2 testBool && || MARK_1 COND_JUMP BLOCK_START "if went to true" PRINT BLOCK_END MARK_2 UNCOND_JUMP MARK_1: BLOCK_START "if went to false" PRINT BLOCK_END MARK_2:
 count1 2 = int
-WHILE count 5 < DO ( count 1 += count1 2 *= ) END
-(count PRINT)
-(count1 PRINT)
-( Some CLASS (sum (a int b int) int (((a b + RETURN)) )) )
-( Something CLASS < Some PARENTCLASS (test () void ((("Calling parent class method:" PRINT)) (sumResult BASE.sum 10 5 CALL = int) ((sumResult PRINT)) )) )
+count 5 < LOOP_MARK COND_JUMP BLOCK_START count 1 += count1 2 *= BLOCK_END LOOP_MARK:
+count PRINT
+count1 PRINT
+( Some CLASS (sum a int b int FUNCTION(2) int PROC_START a b + RETURN PROC_END) )
+( Something CLASS < Some PARENTCLASS (test FUNCTION(0) void PROC_START "Calling parent class method:" PRINT sumResult BASE.sum 10 5 CALL = int sumResult PRINT PROC_END) )
 Something CALL test CALL
 ```
 

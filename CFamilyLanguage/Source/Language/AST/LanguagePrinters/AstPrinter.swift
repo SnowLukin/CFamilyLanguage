@@ -9,18 +9,16 @@ import Foundation
 
 class AstPrinter {
     
-    func printNodes(_ statements: [Stmt]) throws {
-        for statement in statements {
-            print(try printNode(statement))
-        }
+    func getNodes(_ statements: [Stmt]) throws -> String {
+        try statements.map { try getNode($0) }.joined(separator: "\n")
     }
     
-    private func printNode(_ expr: Expr) throws -> String {
-        return try expr.accept(visitor: self)
+    private func getNode(_ expr: Expr) throws -> String {
+        try expr.accept(visitor: self)
     }
     
-    private func printNode(_ stmt: Stmt) throws -> String {
-        return try stmt.accept(visitor: self)
+    private func getNode(_ stmt: Stmt) throws -> String {
+        try stmt.accept(visitor: self)
     }
 }
 
@@ -29,27 +27,27 @@ class AstPrinter {
 extension AstPrinter: ExprVisitor {
     
     func visitAssignExpr(_ expr: Expr.Assign) throws -> String {
-        try expr.name.lexeme + " " + expr.type.rawValue + " " + printNode(expr.value)
+        try expr.name.lexeme + " " + expr.type.rawValue + " " + getNode(expr.value)
     }
     
     func visitBinaryExpr(_ expr: Expr.Binary) throws -> String {
-        try printNode(expr.left) + " " + expr.operator.lexeme + " " + printNode(expr.right)
+        try getNode(expr.left) + " " + expr.operator.lexeme + " " + getNode(expr.right)
     }
     
     func visitCallExpr(_ expr: Expr.Call) throws -> String {
-        var builder = try printNode(expr.callee) + " "
+        var builder = try getNode(expr.callee) + " "
         for argument in expr.arguments {
-            builder += try printNode(argument) + " "
+            builder += try getNode(argument) + " "
         }
         return builder + "CALL"
     }
     
     func visitGetExpr(_ expr: Expr.Get) throws -> String {
-        try printNode(expr.object) + " " + expr.name.lexeme
+        try getNode(expr.object) + " " + expr.name.lexeme
     }
     
     func visitGroupingExpr(_ expr: Expr.Grouping) throws -> String {
-        try "(" + printNode(expr.expression) + ")"
+        try "(" + getNode(expr.expression) + ")"
     }
     
     func visitLiteralExpr(_ expr: Expr.Literal) throws -> String {
@@ -63,11 +61,11 @@ extension AstPrinter: ExprVisitor {
     }
     
     func visitLogicalExpr(_ expr: Expr.Logical) throws -> String {
-        try printNode(expr.right) + " " + expr.operator.lexeme + " " + printNode(expr.left)
+        try getNode(expr.right) + " " + expr.operator.lexeme + " " + getNode(expr.left)
     }
     
     func visitSetExpr(_ expr: Expr.Set) throws -> String {
-        try printNode(expr.object) + " " + expr.name.lexeme + " " + expr.type.rawValue + " " + printNode(expr.value)
+        try getNode(expr.object) + " " + expr.name.lexeme + " " + expr.type.rawValue + " " + getNode(expr.value)
     }
     
     func visitSuperExpr(_ expr: Expr.Super) throws -> String {
@@ -79,7 +77,7 @@ extension AstPrinter: ExprVisitor {
     }
     
     func visitUnaryExpr(_ expr: Expr.Unary) throws -> String {
-        try expr.operator.lexeme + printNode(expr.right)
+        try expr.operator.lexeme + getNode(expr.right)
     }
     
     func visitVariableExpr(_ expr: Expr.Variable) throws -> String {
@@ -89,16 +87,16 @@ extension AstPrinter: ExprVisitor {
     func visitListExpr(_ expr: Expr.List) throws -> String {
         var builder = "( ARRAY LENGTH(\(expr.values.count))"
         for element in expr.values {
-            builder += try " " + printNode(element)
+            builder += try " " + getNode(element)
         }
         builder += " )"
         return builder
     }
     
     func visitSubscriptExpr(_ expr: Expr.Subscript) throws -> String {
-        let builder = try printNode(expr.name) + " INDEX(" + printNode(expr.index) + ")"
+        let builder = try getNode(expr.name) + " INDEX(" + getNode(expr.index) + ")"
         if let value = expr.value {
-            return try builder + " " + (expr.type?.rawValue ?? "=") + " " + printNode(value)
+            return try builder + " " + (expr.type?.rawValue ?? "=") + " " + getNode(value)
         }
         return "GET " + builder
     }
@@ -109,7 +107,7 @@ extension AstPrinter: StmtVisitor {
     func visitBlockStmt(_ stmt: Stmt.Block) throws -> String {
         var builder = "( "
         for statement in stmt.statements {
-            builder += try printNode(statement) + " "
+            builder += try getNode(statement) + " "
         }
         builder += ")"
         return builder
@@ -118,18 +116,18 @@ extension AstPrinter: StmtVisitor {
     func visitClassStmt(_ stmt: Stmt.Class) throws -> String {
         var builder = "( CLASS \(stmt.name.lexeme)"
         if let superclass = stmt.superclass {
-            builder += try " < PARENTCLASS " + printNode(superclass)
+            builder += try " < PARENTCLASS " + getNode(superclass)
         }
         builder += " ("
         for method in stmt.methods {
-            builder += try printNode(method)
+            builder += try getNode(method)
         }
         builder += ") )"
         return builder
     }
     
     func visitExpressionStmt(_ stmt: Stmt.Expression) throws -> String {
-        try printNode(stmt.expression)
+        try getNode(stmt.expression)
     }
     
     func visitFunctionStmt(_ stmt: Stmt.Function) throws -> String {
@@ -141,41 +139,41 @@ extension AstPrinter: StmtVisitor {
         }
         builder += ") ("
         for body in stmt.body {
-            builder += try "(" + printNode(body) + ") "
+            builder += try "(" + getNode(body) + ") "
         }
         builder += ")"
         return builder
     }
     
     func visitIfStmt(_ stmt: Stmt.If) throws -> String {
-        var result = try "IF " + printNode(stmt.condition) + " THEN " + printNode(stmt.thenBranch)
+        var result = try "IF " + getNode(stmt.condition) + " THEN " + getNode(stmt.thenBranch)
         if let elseBranch = stmt.elseBranch {
-            result += try " ELSE " + printNode(elseBranch)
+            result += try " ELSE " + getNode(elseBranch)
         }
         result += " END"
         return result
     }
     
     func visitPrintStmt(_ stmt: Stmt.Print) throws -> String {
-        try "(PRINT " + printNode(stmt.expression) + ")"
+        try "(PRINT " + getNode(stmt.expression) + ")"
     }
     
     func visitReturnStmt(_ stmt: Stmt.Return) throws -> String {
         if let value = stmt.value {
-            return try "(RETURN " + printNode(value) + ")"
+            return try "(RETURN " + getNode(value) + ")"
         }
         return "RETURN"
     }
     
     func visitVarStmt(_ stmt: Stmt.Var) throws -> String {
         if let initializer = stmt.initializer {
-            return try stmt.type.rawValue + " " + stmt.name.lexeme + " = " + printNode(initializer)
+            return try stmt.type.rawValue + " " + stmt.name.lexeme + " = " + getNode(initializer)
         }
         return stmt.type.rawValue + " " + stmt.name.lexeme
     }
     
     func visitWhileStmt(_ stmt: Stmt.While) throws -> String {
-        try "WHILE " + printNode(stmt.condition) + " DO " + printNode(stmt.body) + " END"
+        try "WHILE " + getNode(stmt.condition) + " DO " + getNode(stmt.body) + " END"
     }
     
 }

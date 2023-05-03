@@ -1,0 +1,57 @@
+int a = 10;
+a = 20;
+string b = "20";
+char abs = "c";
+int count = 0;
+void something() {
+    std::cout << ("Hello");
+}
+
+std::cout << ("Test calling function that prints Hello");
+something();
+int c = 10;
+std::cout << ("Test: 10 + 10:");
+std::cout << (a + c);
+int arr[6] = {1, 2, 3, 2, 3, 4};
+std::cout << ("Printing arr = [1, 2, 3, 2, 3, 4]:");
+std::cout << (arr);
+std::cout << ("Printing arr[1]:");
+std::cout << (arr[1]);
+std::cout << ("Changing arr[1] to 20:");
+arr[1] = 20;
+std::cout << (arr[1]);
+bool testBool = true;
+bool testBool2 = false;
+if (((testBool && testBool2) || false)) {
+    std::cout << ("if went to true");
+} else {
+    std::cout << ("if went to false");
+}
+int count1 = 2;
+while (count < 5) {
+    count += 1;
+    count1 *= 2;
+}
+std::cout << (count);
+std::cout << (count1);
+
+class Some {
+public:
+    int sum(a, b) {
+        return a + b;
+    }
+
+};
+
+
+class Something : public Some {
+public:
+    void test() {
+        std::cout << ("Calling parent class method:");
+        int sumResult = Some::sum(10, 5);
+        std::cout << (sumResult);
+    }
+
+};
+
+Something().test();

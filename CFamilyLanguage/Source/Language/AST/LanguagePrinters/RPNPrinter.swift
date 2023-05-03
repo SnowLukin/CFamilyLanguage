@@ -9,44 +9,42 @@ import Foundation
 
 class RPNPrinter {
     
-    func printNodes(_ statements: [Stmt]) throws {
-        for statement in statements {
-            print(try printNode(statement))
-        }
+    func getNodes(_ statements: [Stmt]) throws -> String {
+        try statements.map { try getNode($0) }.joined(separator: "\n")
     }
     
-    private func printNode(_ stmt: Stmt) throws -> String {
+    private func getNode(_ stmt: Stmt) throws -> String {
         try stmt.accept(visitor: self)
     }
     
-    private func printNode(_ expr: Expr) throws -> String {
+    private func getNode(_ expr: Expr) throws -> String {
         try expr.accept(visitor: self)
     }
 }
 
 extension RPNPrinter: ExprVisitor {
     func visitAssignExpr(_ expr: Expr.Assign) throws -> String {
-        try expr.name.lexeme + " " + printNode(expr.value) + " " + expr.type.rawValue
+        try expr.name.lexeme + " " + getNode(expr.value) + " " + expr.type.rawValue
     }
     
     func visitBinaryExpr(_ expr: Expr.Binary) throws -> String {
-        try printNode(expr.left) + " " + printNode(expr.right) + " " + expr.operator.lexeme
+        try getNode(expr.left) + " " + getNode(expr.right) + " " + expr.operator.lexeme
     }
     
     func visitCallExpr(_ expr: Expr.Call) throws -> String {
-        var builder = try printNode(expr.callee) + " "
+        var builder = try getNode(expr.callee) + " "
         for argument in expr.arguments {
-            builder += try printNode(argument) + " "
+            builder += try getNode(argument) + " "
         }
         return builder + "CALL"
     }
     
     func visitGetExpr(_ expr: Expr.Get) throws -> String {
-        try printNode(expr.object) + " " + expr.name.lexeme
+        try getNode(expr.object) + " " + expr.name.lexeme
     }
     
     func visitGroupingExpr(_ expr: Expr.Grouping) throws -> String {
-        try "(" + printNode(expr.expression) + ")"
+        try "(" + getNode(expr.expression) + ")"
     }
     
     func visitLiteralExpr(_ expr: Expr.Literal) throws -> String {
@@ -60,11 +58,11 @@ extension RPNPrinter: ExprVisitor {
     }
     
     func visitLogicalExpr(_ expr: Expr.Logical) throws -> String {
-        try printNode(expr.right) + " " + printNode(expr.left) + " " + expr.operator.lexeme
+        try getNode(expr.right) + " " + getNode(expr.left) + " " + expr.operator.lexeme
     }
     
     func visitSetExpr(_ expr: Expr.Set) throws -> String {
-        try printNode(expr.object) + " " + expr.name.lexeme + " " + printNode(expr.value) + " " + expr.type.rawValue
+        try getNode(expr.object) + " " + expr.name.lexeme + " " + getNode(expr.value) + " " + expr.type.rawValue
     }
     
     func visitSuperExpr(_ expr: Expr.Super) throws -> String {
@@ -76,7 +74,7 @@ extension RPNPrinter: ExprVisitor {
     }
     
     func visitUnaryExpr(_ expr: Expr.Unary) throws -> String {
-        try expr.operator.lexeme + printNode(expr.right)
+        try expr.operator.lexeme + getNode(expr.right)
     }
     
     func visitVariableExpr(_ expr: Expr.Variable) throws -> String {
@@ -86,16 +84,16 @@ extension RPNPrinter: ExprVisitor {
     func visitListExpr(_ expr: Expr.List) throws -> String {
         var builder = "("
         for element in expr.values {
-            builder += try " " + printNode(element)
+            builder += try " " + getNode(element)
         }
         builder += " LENGTH(\(expr.values.count)) ARRAY )"
         return builder
     }
     
     func visitSubscriptExpr(_ expr: Expr.Subscript) throws -> String {
-        let builder = try printNode(expr.name) + " INDEX(" + printNode(expr.index) + ") "
+        let builder = try getNode(expr.name) + " INDEX(" + getNode(expr.index) + ") "
         if let value = expr.value {
-            return try builder + printNode(value) + " " + (expr.type?.rawValue ?? "=")
+            return try builder + getNode(value) + " " + (expr.type?.rawValue ?? "=")
         }
         return builder + "GET"
     }
@@ -103,75 +101,75 @@ extension RPNPrinter: ExprVisitor {
 
 extension RPNPrinter: StmtVisitor {
     func visitBlockStmt(_ stmt: Stmt.Block) throws -> String {
-        var builder = "( "
+        var builder = "BLOCK_START "
         for statement in stmt.statements {
-            builder += try printNode(statement) + " "
+            builder += try getNode(statement) + " "
         }
-        builder += ")"
+        builder += "BLOCK_END"
         return builder
     }
     
     func visitClassStmt(_ stmt: Stmt.Class) throws -> String {
         var builder = "( \(stmt.name.lexeme) CLASS"
         if let superclass = stmt.superclass {
-            builder += try " < " + printNode(superclass) + " PARENTCLASS"
+            builder += try " < " + getNode(superclass) + " PARENTCLASS"
         }
         builder += " ("
         for method in stmt.methods {
-            builder += try printNode(method)
+            builder += try getNode(method)
         }
         builder += ") )"
         return builder
     }
     
     func visitExpressionStmt(_ stmt: Stmt.Expression) throws -> String {
-        try printNode(stmt.expression)
+        try getNode(stmt.expression)
     }
     
     func visitFunctionStmt(_ stmt: Stmt.Function) throws -> String {
-        var builder = "\(stmt.name.lexeme) ("
+        var builder = "\(stmt.name.lexeme)"
         
-        for (index, param) in stmt.params.enumerated() {
-            if index != 0 { builder += " " }
-            builder += "\(param.name.lexeme) \(param.type)"
+        for param in stmt.params {
+            builder += " \(param.name.lexeme) \(param.type)"
         }
-        builder += ") \(stmt.type.rawValue) ("
-        for body in stmt.body {
-            builder += try "(" + printNode(body) + ") "
+        builder += " FUNCTION(\(stmt.params.count)) \(stmt.type.rawValue) PROC_START "
+        for component in stmt.body {
+            builder += try getNode(component) + " "
         }
-        builder += ")"
+        builder += "PROC_END"
         return builder
     }
     
     func visitIfStmt(_ stmt: Stmt.If) throws -> String {
-        var result = try "IF " + printNode(stmt.condition) + " THEN " + printNode(stmt.thenBranch)
+        var result = try getNode(stmt.condition) + " MARK_1 COND_JUMP " + getNode(stmt.thenBranch)
         if let elseBranch = stmt.elseBranch {
-            result += try " ELSE " + printNode(elseBranch)
+            result += try " MARK_2 UNCOND_JUMP MARK_1: " + getNode(elseBranch) + " MARK_2:"
+        } else {
+            result += " MARK_1:"
         }
-        result += " END"
         return result
     }
     
     func visitPrintStmt(_ stmt: Stmt.Print) throws -> String {
-        try "(" + printNode(stmt.expression) + " PRINT)"
+        try getNode(stmt.expression) + " PRINT"
     }
     
     func visitReturnStmt(_ stmt: Stmt.Return) throws -> String {
         if let value = stmt.value {
-            return try "(" + printNode(value) + " RETURN)"
+            return try getNode(value) + " RETURN"
         }
         return "RETURN"
     }
     
     func visitVarStmt(_ stmt: Stmt.Var) throws -> String {
         if let initializer = stmt.initializer {
-            return try stmt.name.lexeme + " " + printNode(initializer) + " = " + stmt.type.rawValue
+            return try stmt.name.lexeme + " " + getNode(initializer) + " = " + stmt.type.rawValue
         }
         return stmt.name.lexeme + " " + stmt.type.rawValue
     }
     
     func visitWhileStmt(_ stmt: Stmt.While) throws -> String {
-        try "WHILE " + printNode(stmt.condition) + " DO " + printNode(stmt.body) + " END"
+        try getNode(stmt.condition) + " LOOP_MARK COND_JUMP " + getNode(stmt.body) + " LOOP_MARK:"
     }
     
 }
